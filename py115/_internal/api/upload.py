@@ -118,8 +118,6 @@ class InitApiWithHash(api.ApiSpec):
         super().__init__('https://uplb.115.com/4.0/initupload.php', True)
         self._helper = helper
         now = int(time.time())
-        file_size = self.file_size
-        file_hash = self.file_hash
         self.update_from({
             'appid': '0',
             'appversion': helper.app_version,
