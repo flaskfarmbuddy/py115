@@ -105,7 +105,7 @@ class InitApi(api.ApiSpec):
 
 class InitApiWithHash(api.ApiSpec):
 
-    _helper: upload.Helper = None
+    _helper: Helper = None
 
     def __init__(
             self, 
@@ -113,7 +113,7 @@ class InitApiWithHash(api.ApiSpec):
             file_name: str, 
             file_size: int, 
             file_hash: str, 
-            helper: upload.Helper
+            helper: Helper
         ) -> None:
         super().__init__('https://uplb.115.com/4.0/initupload.php', True)
         self._helper = helper
