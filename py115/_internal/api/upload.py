@@ -106,13 +106,15 @@ class InitApi(api.ApiSpec):
 class InitApiWithHash(api.ApiSpec):
 
     _helper: Helper = None
+    _file_io: typing.BinaryIO = None
 
     def __init__(
             self, 
             target_id: str, 
             file_name: str, 
             file_size: int, 
-            file_hash: str, 
+            file_hash: str,
+            file_io: typing.BinaryIO,
             helper: Helper
         ) -> None:
         super().__init__('https://uplb.115.com/4.0/initupload.php', True)
