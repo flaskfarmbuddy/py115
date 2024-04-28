@@ -295,6 +295,37 @@ class StorageService:
             token_result = self._client.execute_api(upload.TokenApi())
         return types.UploadTicket._create(init_result, token_result)
 
+    def request_upload_data_with_hash(
+            self, 
+            dir_id: str, 
+            save_name: str,
+            save_size: int,  
+            save_hash: str,
+        ) -> types.UploadTicket:
+        """Upload data as a file to cloud storage.
+
+        Args:
+            dir_id (str): ID of directory where to store the file.
+            save_name (str): File name to be saved.
+            save_size (int): size of file
+            save_hash (str): SHA1 hash of file.
+
+        Return:
+            py115.types.UploadTicket: A ticket contains all required fields to
+            upload file to cloud, should be used with aliyun-oss-python-sdk.
+        """
+        init_result = self._client.execute_api(upload.InitApiWithHash(
+            target_id=f'U_1_{dir_id}',
+            file_name=save_name,
+            file_size=save_size,
+            file_hash=save_hash,
+            helper=self._upload_helper
+        ))
+        token_result = None
+        if not init_result['done']:
+            token_result = self._client.execute_api(upload.TokenApi())
+        return types.UploadTicket._create(init_result, token_result)
+
     def request_play(self, pickcode: str) -> types.PlayTicket:
         """Play a video file on cloud, returns required parameters as a ticket.
 
