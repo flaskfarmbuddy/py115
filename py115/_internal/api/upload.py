@@ -82,6 +82,8 @@ class InitApi(api.ApiSpec):
             self, 
             target_id: str, 
             file_name: str, 
+            file_size: int, 
+            file_hash: str,
             file_io: typing.BinaryIO,
             helper: Helper
         ) -> None:
@@ -89,37 +91,8 @@ class InitApi(api.ApiSpec):
         self._file_io = file_io
         self._helper = helper
         now = int(time.time())
-        file_size, file_hash = _digest_file(file_io)
-        self.update_from({
-            'appid': '0',
-            'appversion': helper.app_version,
-            'userid': helper.user_id,
-            'filename': file_name,
-            'filesize': file_size,
-            'fileid': file_hash,
-            'target': target_id,
-            'sig': helper.calc_sig(file_hash, target_id),
-            't': now,
-            'token': helper.calc_token(file_hash, file_size, now)
-        })
-
-class InitApiWithHash(api.ApiSpec):
-
-    _helper: Helper = None
-    _file_io: typing.BinaryIO = None
-
-    def __init__(
-            self, 
-            target_id: str, 
-            file_name: str, 
-            file_size: int, 
-            file_hash: str,
-            file_io: typing.BinaryIO,
-            helper: Helper
-        ) -> None:
-        super().__init__('https://uplb.115.com/4.0/initupload.php', True)
-        self._helper = helper
-        now = int(time.time())
+        if not file_size and not file_hash:
+            file_size, file_hash = _digest_file(file_io)
         self.update_from({
             'appid': '0',
             'appversion': helper.app_version,
