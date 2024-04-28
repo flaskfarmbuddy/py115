@@ -111,7 +111,7 @@ class InitApiWithHash(api.ApiSpec):
             self, 
             target_id: str, 
             file_name: str, 
-            file_size: str, 
+            file_size: int, 
             file_hash: str, 
             helper: upload.Helper
         ) -> None:
