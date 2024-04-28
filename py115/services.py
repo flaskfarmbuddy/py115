@@ -265,6 +265,23 @@ class StorageService:
         with open(file_path, 'rb') as file_io:
             return self.request_upload_data(dir_id, file_name, file_io)
 
+    def request_upload_with_hash(self, dir_id: str, file_path: str) -> types.UploadTicket:
+        """Upload local file to cloud storage.
+
+        Args:
+            dir_id (str): ID of directory where to store the file.
+            file_path (str): Path of the local file.
+        
+        Return:
+            py115.types.UploadTicket: A ticket contains all required fields to
+            upload file to cloud, should be used with aliyun-oss-python-sdk.
+        """
+        if not os.path.exists(file_path):
+            return None
+        file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as file_io:
+            return self.request_upload_data_with_hash(dir_id, file_name, file_io)
+
     def request_upload_data(
             self, 
             dir_id: str, 
@@ -301,6 +318,7 @@ class StorageService:
             save_name: str,
             save_size: int,  
             save_hash: str,
+            data_io: typing.BinaryIO,
         ) -> types.UploadTicket:
         """Upload data as a file to cloud storage.
 
@@ -314,11 +332,14 @@ class StorageService:
             py115.types.UploadTicket: A ticket contains all required fields to
             upload file to cloud, should be used with aliyun-oss-python-sdk.
         """
+        if not (data_io.readable() and data_io.seekable()):
+            return None
         init_result = self._client.execute_api(upload.InitApiWithHash(
             target_id=f'U_1_{dir_id}',
             file_name=save_name,
             file_size=save_size,
             file_hash=save_hash,
+            file_io=data_io,
             helper=self._upload_helper
         ))
         token_result = None
