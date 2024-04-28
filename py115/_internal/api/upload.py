@@ -103,6 +103,36 @@ class InitApi(api.ApiSpec):
             'token': helper.calc_token(file_hash, file_size, now)
         })
 
+class InitApiWithHash(api.ApiSpec):
+
+    _helper: upload.Helper = None
+
+    def __init__(
+            self, 
+            target_id: str, 
+            file_name: str, 
+            file_size: str, 
+            file_hash: str, 
+            helper: upload.Helper
+        ) -> None:
+        super().__init__('https://uplb.115.com/4.0/initupload.php', True)
+        self._helper = helper
+        now = int(time.time())
+        file_size = self.file_size
+        file_hash = self.file_hash
+        self.update_from({
+            'appid': '0',
+            'appversion': helper.app_version,
+            'userid': helper.user_id,
+            'filename': file_name,
+            'filesize': file_size,
+            'fileid': file_hash,
+            'target': target_id,
+            'sig': helper.calc_sig(file_hash, target_id),
+            't': now,
+            'token': helper.calc_token(file_hash, file_size, now)
+        })
+            
     def parse_result(self, result: dict):
         status = result['status']
         if status == 7:
